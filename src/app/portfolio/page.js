@@ -1,7 +1,8 @@
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { TypeAnimation } from "react-type-animation";
 import { motion } from "framer-motion";
 import Image from "next/image";
+
 export default function Portfolio() {
   return (
     <main className="min-h-screen bg-slate-900 text-white p-16">
