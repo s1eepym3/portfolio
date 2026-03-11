@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import projects from "../data/projects";
 
 export default function Projects() {
@@ -8,11 +9,14 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   return (
-    <section id="projects" className="px-10 md:px-20 py-20 bg-slate-900">
 
-      <h2 className="text-3xl font-bold mb-12 text-sky-400">
+    <section id="projects" className="px-6 md:px-20 py-20 bg-slate-900">
+
+      <h2 className="text-3xl font-bold mb-12 text-cyan-400">
         Featured Projects
       </h2>
+
+      {/* PROJECT GRID */}
 
       <div className="grid md:grid-cols-2 gap-10">
 
@@ -21,20 +25,36 @@ export default function Projects() {
           <div
             key={index}
             onClick={() => setSelectedProject(project)}
-            className="bg-slate-900 border border-slate-800 hover:border-cyan-500 p-8 rounded-2xl hover:scale-105 transition cursor-pointer"
+            className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden cursor-pointer hover:scale-105 hover:border-cyan-500 transition"
           >
 
-            <h3 className="text-2xl font-semibold mb-3">
-              {project.title}
-            </h3>
+            {/* COVER IMAGE */}
 
-            <p className="text-gray-400 mb-4">
-              {project.description}
-            </p>
+            <Image
+              src={project.cover}
+              width={600}
+              height={400}
+              alt={project.title}
+              className="w-full h-48 object-cover"
+            />
 
-            <p className="text-sm text-gray-500">
-              Tech: {project.tech}
-            </p>
+            {/* TEXT */}
+
+            <div className="p-6">
+
+              <h3 className="text-xl font-semibold mb-2">
+                {project.title}
+              </h3>
+
+              <p className="text-gray-400 mb-3">
+                {project.description}
+              </p>
+
+              <p className="text-sm text-gray-500">
+                Tech: {project.tech}
+              </p>
+
+            </div>
 
           </div>
 
@@ -42,26 +62,51 @@ export default function Projects() {
 
       </div>
 
-      {selectedProject && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
 
-          <div className="bg-slate-900 p-10 rounded-xl max-w-lg">
+      {/* PROJECT MODAL */}
+
+      {selectedProject && (
+
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-6">
+
+          <div className="bg-slate-900 rounded-xl max-w-4xl w-full p-8">
+
+            {/* TITLE */}
 
             <h3 className="text-2xl font-bold mb-4">
               {selectedProject.title}
             </h3>
 
-            <p className="text-gray-400 mb-4">
+            {/* DESCRIPTION */}
+
+            <p className="text-gray-400 mb-6">
               {selectedProject.description}
             </p>
 
-            <p className="text-gray-500 mb-6">
-              Tech: {selectedProject.tech}
-            </p>
+            {/* IMAGE GALLERY */}
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+
+              {selectedProject.images.map((img, index) => (
+
+                <Image
+                  key={index}
+                  src={img}
+                  width={500}
+                  height={300}
+                  alt="Project image"
+                  className="rounded-lg object-cover"
+                />
+
+              ))}
+
+            </div>
+
+            {/* CLOSE BUTTON */}
 
             <button
               onClick={() => setSelectedProject(null)}
-              className="bg-sky-500 px-5 py-2 rounded"
+              className="bg-cyan-500 hover:bg-cyan-400 px-6 py-2 rounded-lg transition"
             >
               Close
             </button>
@@ -69,8 +114,11 @@ export default function Projects() {
           </div>
 
         </div>
+
       )}
 
     </section>
+
   );
+
 }
