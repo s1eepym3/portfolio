@@ -44,7 +44,7 @@ export default function Hero() {
       {/* FOTO */}
     <div className="flex justify-center mt-10 md:mt-0">
   <Image
-    src="/profile02.png"
+    src="/profile03.png"
     alt="Profile"
     width={300}
     height={300}
