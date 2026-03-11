@@ -42,15 +42,15 @@ export default function Hero() {
       </div>
 
       {/* FOTO */}
-      <div className="hidden md:flex justify-center">
-        <Image
-          src="/profile02.png"
-          alt="Profile"
-          width={350}
-          height={350}
-          className="rounded-full border-4 border-cyan-400 shadow-lg shadow-cyan-500/30"
-        />
-      </div>
+    <div className="flex justify-center mt-10 md:mt-0">
+  <Image
+    src="/profile02.png"
+    alt="Profile"
+    width={300}
+    height={300}
+    className="rounded-full border-4 border-cyan-400 shadow-lg shadow-cyan-500/30"
+    />
+    </div>
 
     </section>
   );
