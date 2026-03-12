@@ -1,50 +1,48 @@
+import { FaPython, FaGithub } from "react-icons/fa";
+import { SiNextdotjs, SiTailwindcss, SiMysql, SiPhp } from "react-icons/si";
+
 export default function Skills() {
   return (
-    <section className="px-10 md:px-20 py-20">
+    <section className="px-10 md:px-20 py-20 bg-slate-900">
 
-      <h2 className="text-3xl font-bold mb-12 text-sky-400">
-        Technical Skills
+      <h2 className="text-3xl font-bold text-cyan-400 mb-10">
+        Skills
       </h2>
 
-      <div className="grid md:grid-cols-3 gap-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
 
-        <div>
-          <h3 className="text-xl font-semibold mb-4">
-            Backend
-          </h3>
-
-          <ul className="text-gray-400 space-y-2">
-            <li>PHP</li>
-            <li>MySQL</li>
-            <li>REST API</li>
-          </ul>
+        <div className="flex items-center gap-3 bg-slate-800 p-4 rounded-lg">
+          <FaPython size={22}/>
+          <span>Python</span>
         </div>
 
-        <div>
-          <h3 className="text-xl font-semibold mb-4">
-            Machine Learning
-          </h3>
-
-          <ul className="text-gray-400 space-y-2">
-            <li>Python</li>
-            <li>Pandas</li>
-            <li>Scikit-learn</li>
-          </ul>
+        <div className="flex items-center gap-3 bg-slate-800 p-4 rounded-lg">
+          <SiPhp size={22}/>
+          <span>PHP</span>
         </div>
 
-        <div>
-          <h3 className="text-xl font-semibold mb-4">
-            Frontend & Tools
-          </h3>
+        <div className="flex items-center gap-3 bg-slate-800 p-4 rounded-lg">
+          <SiMysql size={22}/>
+          <span>MySQL</span>
+        </div>
 
-          <ul className="text-gray-400 space-y-2">
-            <li>Next.js</li>
-            <li>Tailwind CSS</li>
-            <li>Git & GitHub</li>
-          </ul>
+        <div className="flex items-center gap-3 bg-slate-800 p-4 rounded-lg">
+          <SiNextdotjs size={22}/>
+          <span>Next.js</span>
+        </div>
+
+        <div className="flex items-center gap-3 bg-slate-800 p-4 rounded-lg">
+          <SiTailwindcss size={22}/>
+          <span>Tailwind</span>
+        </div>
+
+        <div className="flex items-center gap-3 bg-slate-800 p-4 rounded-lg">
+          <FaGithub size={22}/>
+          <span>GitHub</span>
         </div>
 
       </div>
+
     </section>
   );
 }

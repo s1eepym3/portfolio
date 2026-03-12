@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import projects from "../data/projects";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 export default function Projects() {
 
@@ -68,8 +70,9 @@ export default function Projects() {
       {selectedProject && (
 
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-6">
-
+          
           <div className="bg-slate-900 rounded-xl max-w-4xl w-full p-8">
+          
 
             {/* TITLE */}
 
@@ -83,24 +86,31 @@ export default function Projects() {
               {selectedProject.description}
             </p>
 
-            {/* IMAGE GALLERY */}
+{/* IMAGE GALLERY SLIDER */}
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+<Swiper
+  spaceBetween={20}
+  slidesPerView={1}
+  className="mb-6"
+>
 
-              {selectedProject.images.map((img, index) => (
+  {selectedProject.images.map((img, index) => (
 
-                <Image
-                  key={index}
-                  src={img}
-                  width={500}
-                  height={300}
-                  alt="Project image"
-                  className="rounded-lg object-cover"
-                />
+    <SwiperSlide key={index}>
 
-              ))}
+      <Image
+        src={img}
+        width={900}
+        height={500}
+        alt="Project image"
+        className="rounded-lg w-full object-cover"
+      />
 
-            </div>
+    </SwiperSlide>
+
+  ))}
+
+</Swiper>
 
             {/* CLOSE BUTTON */}
 
