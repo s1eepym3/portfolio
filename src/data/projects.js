@@ -7,6 +7,7 @@ const projects = [
     cover: "/projects/secureapi/Cover.png",
 
     images: [
+      "/projects/secureapi/Cover.png",
       "/projects/secureapi/Dashboard.png",
       "/projects/secureapi/Adaisi.png",
     ],
@@ -24,6 +25,7 @@ const projects = [
     cover: "/projects/Steganogrphy/overview.png",
 
     images: [
+      "/projects/Steganogrphy/overview.png",
       "/projects/Steganogrphy/embed.png",
       "/projects/Steganogrphy/extract.png"
     ],
