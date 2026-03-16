@@ -17,7 +17,7 @@ export default function Hero() {
           sequence={[
             "Backend Developer",
             2000,
-            "Machine Learning Enthusiast",
+            "Software Developer",
             2000,
           ]}
           wrapper="h2"
@@ -27,7 +27,7 @@ export default function Hero() {
         />
 
         <p className="max-w-xl text-gray-400 mb-8">
-          I build scalable web systems and data-driven solutions.
+          I build things for the web and explore security in modern systems.
         </p>
 
         <div className="flex gap-4">

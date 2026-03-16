@@ -17,9 +17,9 @@ export default function About() {
       </h2>
 
       <p className="max-w-3xl text-gray-300 leading-relaxed">
-        Informatics student with strong interest in backend development and machine learning systems.
-        Experienced in building web-based management systems and implementing data processing workflows.
-        Passionate about creating efficient, scalable, and data-driven solutions.
+        I am a 6th-semester Informatics student at Malikussaleh University with a strong interest in software engineering and backend development. My primary programming language is Python, and I also have experience working with JavaScript, Node.js, and PHP.
+        I have built several web-based systems and backend projects using technologies such as MongoDB and MySQL. Through these projects, I focus on developing efficient, scalable, and reliable systems.
+        I enjoy exploring topics related to backend architecture, system security, and data processing. I am also actively improving my skills through personal projects and challenges, including participation in the ABC Challenge 2026.
       </p>
 
     </motion.section>
