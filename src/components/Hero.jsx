@@ -42,15 +42,24 @@ export default function Hero() {
       </div>
 
       {/* FOTO */}
-    <div className="flex justify-center mt-10 md:mt-0">
-  <Image
-    src="/profile03.png"
-    alt="Profile"
-    width={300}
-    height={300}
-    className="rounded-full border-4 border-cyan-400 shadow-lg shadow-cyan-500/30"
-    />
-    </div>
+      <div className="flex justify-center mt-10 md:mt-0 relative group">
+        {/* Efek Cahaya di Belakang (Glow) */}
+        <div className="absolute inset-0 bg-cyan-500/20 blur-[100px] rounded-full animate-pulse"></div>
+
+        {/* Bingkai Gradient dengan Animasi */}
+        <div className="relative p-1 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 shadow-2xl shadow-cyan-500/20 hover:scale-105 transition-transform duration-500">
+          <div className="bg-slate-900 rounded-2xl overflow-hidden">
+            <Image
+              src="/profile02.JPG"
+              alt="Profile"
+              width={400}
+              height={400}
+              className="object-cover hover:scale-110 transition-transform duration-700"
+              priority
+            />
+          </div>
+        </div>
+      </div>
 
     </section>
   );

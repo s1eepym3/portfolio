@@ -12,7 +12,7 @@ const projects = [
       "/projects/secureapi/Adaisi.png",
     ],
 
-    tech: "Node.js, Express, MongoDB, GridFS",
+    tech: ["Node.js", "Express", "MongoDB", "GridFS"],
 
     github: "https://github.com/s1eepym3/project1",
     demo: "https://demo-project.vercel.app"
@@ -30,7 +30,7 @@ const projects = [
       "/projects/Steganogrphy/extract.png"
     ],
 
-    tech: "Python, OpenCV / PIL, NumPy",
+    tech: ["Python", "OpenCV", "PIL", "NumPy"],
 
     github: "https://github.com/s1eepym3/project2",
     demo: ""
