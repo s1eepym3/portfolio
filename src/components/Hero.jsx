@@ -49,7 +49,7 @@ export default function Hero() {
         <div className="relative p-1 rounded-3xl bg-gradient-to-tr from-cyan-500/20 to-blue-600/20 shadow-2xl shadow-cyan-500/10 hover:scale-105 transition-transform duration-500">
           <div className="bg-slate-900 rounded-3xl overflow-hidden relative aspect-[4/5] w-[320px] md:w-[400px]">
             <Image
-              src="/profile02.JPG"
+              src="/portfolio/profile02.JPG"
               alt="Profile"
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-700"
