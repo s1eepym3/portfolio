@@ -88,7 +88,9 @@ export default function Navbar() {
                 <a
                   key={link.name}
                   href={link.href}
-                  onClick={() => setIsOpen(false)}
+                  onClick={(e) => {
+                    setIsOpen(false);
+                  }}
                   className="text-xl font-medium text-gray-300 hover:text-cyan-400"
                 >
                   {link.name}

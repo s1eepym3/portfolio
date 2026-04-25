@@ -5,17 +5,17 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="h-screen grid md:grid-cols-2 items-center px-10 md:px-20 bg-[radial-gradient(circle_at_1px_1px,#1f2937_1px,transparent_0)] bg-[size:40px_40px]">
+    <section className="min-h-screen grid md:grid-cols-2 items-center px-10 md:px-20 pt-32 md:pt-0 bg-[radial-gradient(circle_at_1px_1px,#1f2937_1px,transparent_0)] bg-[size:40px_40px]">
 
       {/* TEXT */}
       <div>
-        <h1 className="text-5xl font-bold mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold mb-6">
           Hi, I'm <span className="text-sky-400">Mohammad Haykhal</span>
         </h1>
 
         <TypeAnimation
           sequence={[
-            "Backend Developer",
+            "Web Developer",
             2000,
             "Software Developer",
             2000,
@@ -46,17 +46,18 @@ export default function Hero() {
         {/* Efek Cahaya di Belakang (Glow) */}
         <div className="absolute inset-0 bg-cyan-500/20 blur-[100px] rounded-full animate-pulse"></div>
 
-        {/* Bingkai Gradient dengan Animasi */}
-        <div className="relative p-1 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 shadow-2xl shadow-cyan-500/20 hover:scale-105 transition-transform duration-500">
-          <div className="bg-slate-900 rounded-2xl overflow-hidden">
+        <div className="relative p-1 rounded-3xl bg-gradient-to-tr from-cyan-500/20 to-blue-600/20 shadow-2xl shadow-cyan-500/10 hover:scale-105 transition-transform duration-500">
+          <div className="bg-slate-900 rounded-3xl overflow-hidden relative aspect-[4/5] w-[320px] md:w-[400px]">
             <Image
               src="/profile02.JPG"
               alt="Profile"
-              width={400}
-              height={400}
-              className="object-cover hover:scale-110 transition-transform duration-700"
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-700"
               priority
             />
+            {/* Soft Blend Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/20 via-transparent to-transparent"></div>
           </div>
         </div>
       </div>

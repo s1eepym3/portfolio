@@ -20,10 +20,10 @@ export default function About() {
       transition={{ duration: 0.8 }}
     >
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
-        
+
         {/* LEFT: TEXT CONTENT */}
         <div className="lg:w-3/5">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -37,7 +37,7 @@ export default function About() {
 
           <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
             <p>
-              I am a 6th-semester Informatics student at <span className="text-white font-semibold">Malikussaleh University</span> with a strong interest in software engineering and backend development. 
+              I am a 6th-semester Informatics student at <span className="text-white font-semibold">Malikussaleh University</span> with a strong interest in software engineering and web development.
             </p>
             <p>
               My primary expertise lies in <span className="text-yellow-400 font-mono">Python</span>, and I have extensive experience building scalable systems using <span className="text-white font-semibold">Node.js</span>, <span className="text-white font-semibold">PHP</span>, and modern database solutions like <span className="text-blue-400">MySQL</span> and <span className="text-green-400">MongoDB</span>.

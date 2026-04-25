@@ -5,40 +5,40 @@ import { FaEnvelope, FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa";
 
 export default function Contact() {
   const contactLinks = [
-    { 
-      name: "Email", 
-      value: "mohdhaykhal67@gmail.com", 
-      href: "mailto:mohdhaykhal67@gmail.com", 
-      icon: <FaEnvelope />, 
-      color: "hover:text-red-400" 
+    {
+      name: "Email",
+      value: "mohdhaykhal67@gmail.com",
+      href: "mailto:mohdhaykhal67@gmail.com",
+      icon: <FaEnvelope />,
+      color: "hover:text-red-400"
     },
-    { 
-      name: "GitHub", 
-      value: "github.com/s1eepym3", 
-      href: "https://github.com/s1eepym3", 
-      icon: <FaGithub />, 
-      color: "hover:text-gray-400" 
+    {
+      name: "GitHub",
+      value: "github.com/s1eepym3",
+      href: "https://github.com/s1eepym3",
+      icon: <FaGithub />,
+      color: "hover:text-gray-400"
     },
-    { 
-      name: "WhatsApp", 
-      value: "+62 812-xxxx-xxxx", 
-      href: "https://wa.me/628120000000", 
-      icon: <FaWhatsapp />, 
-      color: "hover:text-green-400" 
+    {
+      name: "WhatsApp",
+      value: "+62 831-9702-7655",
+      href: "https://wa.me/6283197027655",
+      icon: <FaWhatsapp />,
+      color: "hover:text-green-400"
     },
-    { 
-      name: "LinkedIn", 
-      value: "Mohammad Haykhal", 
-      href: "https://linkedin.com/in/haykhal", 
-      icon: <FaLinkedin />, 
-      color: "hover:text-blue-400" 
+    {
+      name: "LinkedIn",
+      value: "Mohammad Haykhal",
+      href: "https://www.linkedin.com/in/mohammad-haykhal-a40aaa405",
+      icon: <FaLinkedin />,
+      color: "hover:text-blue-400"
     },
   ];
 
   return (
     <section id="contact" className="px-6 md:px-20 py-24 bg-slate-950">
       <div className="max-w-6xl mx-auto">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -57,7 +57,7 @@ export default function Contact() {
             <motion.a
               key={index}
               href={link.href}
-              target="_blank"
+              target={link.href.startsWith("mailto:") ? "_self" : "_blank"}
               rel="noopener noreferrer"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -80,14 +80,14 @@ export default function Contact() {
         </div>
 
         {/* CTA BUTTON */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="mt-20 text-center"
         >
-          <a 
-            href="mailto:mohdhaykhal67@gmail.com" 
+          <a
+            href="mailto:mohdhaykhal67@gmail.com"
             className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all hover:scale-105"
           >
             <FaEnvelope /> Say Hello
