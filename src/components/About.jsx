@@ -1,67 +1,116 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { profileData } from "../data/profile";
+import SectionLabel from "./ui/SectionLabel";
 
-export default function About() {
-  const stats = profileData.about.stats;
+const words = [
+  { text: "Most", gold: false },
+  { text: "people", gold: false },
+  { text: "see", gold: false },
+  { text: "the", gold: false },
+  { text: "interface.", gold: false },
+  { text: "I", gold: false },
+  { text: "care", gold: false },
+  { text: "about", gold: false },
+  { text: "what", gold: false },
+  { text: "happens", gold: false },
+  { text: "after", gold: true },
+  { text: "the", gold: true },
+  { text: "button", gold: true },
+  { text: "is", gold: true },
+  { text: "pressed", gold: true },
+  { text: ":", gold: false, attached: true },
+  { text: "where", gold: false },
+  { text: "the", gold: false },
+  { text: "data", gold: false },
+  { text: "goes,", gold: false },
+  { text: "who", gold: false },
+  { text: "can", gold: false },
+  { text: "read", gold: false },
+  { text: "it,", gold: false },
+  { text: "and", gold: false },
+  { text: "whether", gold: false },
+  { text: "it", gold: false },
+  { text: "survives", gold: true },
+  { text: "a", gold: true },
+  { text: "bad", gold: true },
+  { text: "day", gold: true },
+  { text: ".", gold: false, attached: true },
+];
+
+function AnimatedWord({ word, progress, index, total }) {
+  const shouldReduceMotion = useReducedMotion();
+  
+  const start = index / total;
+  const end = start + (1 / total);
+
+  // Opacity transitions from 0.35 to 1
+  const opacity = useTransform(progress, [start, end], [0.35, 1]);
+  
+  // Color transitions from text ivory (#EDE8DC) to gold (#C9A961) after lit
+  const color = useTransform(
+    progress, 
+    [end, Math.min(end + 0.1, 1)], 
+    word.gold ? ["#EDE8DC", "#C9A961"] : ["#EDE8DC", "#EDE8DC"]
+  );
 
   return (
-    <motion.section
-      id="about"
-      className="px-6 md:px-20 py-24 bg-slate-900 relative overflow-hidden"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
+    <motion.span 
+      style={shouldReduceMotion ? {} : { opacity, color }}
+      className={`inline-block ${word.attached ? '' : 'mr-[0.2em]'} ${word.gold ? 'italic' : ''} ${shouldReduceMotion && word.gold ? 'text-[var(--accent)]' : ''}`}
     >
-      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+      {word.text}
+    </motion.span>
+  );
+}
 
-        {/* LEFT: TEXT CONTENT */}
-        <div className="lg:w-3/5">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-8"
-          >
-            <h2 className="text-4xl font-bold text-white mb-4">
-              About <span className="text-cyan-400">Me</span>
-            </h2>
-            <div className="h-1.5 w-20 bg-cyan-500 rounded-full"></div>
-          </motion.div>
+export default function About() {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 75%", "center center"]
+  });
 
-          <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
-            {profileData.about.paragraphs.map((paragraph, idx) => (
-              <p key={idx} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
+  return (
+    <section
+      id="about"
+      ref={containerRef}
+      className="px-6 md:px-12 lg:px-24 py-32 lg:py-48 max-w-[1400px] mx-auto w-full flex flex-col gap-16 relative"
+    >
+      <SectionLabel number="01" label="PERSPECTIVE" />
+
+      <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+        {/* LEFT: STATEMENT */}
+        <div className="lg:w-2/3">
+          <h2 className="font-serif text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.95] tracking-[-0.02em] text-[var(--text)] pb-[0.22em] -mb-[0.22em]">
+            {words.map((word, idx) => (
+              <AnimatedWord 
+                key={idx} 
+                word={word} 
+                progress={scrollYProgress} 
+                index={idx} 
+                total={words.length} 
+              />
+            ))}
+          </h2>
+        </div>
+
+        {/* RIGHT: TIMELINE */}
+        <div className="lg:w-1/3 flex flex-col w-full">
+          <div className="border-l border-[var(--line)] pl-6 lg:pl-8 flex flex-col gap-10">
+            {profileData.about.timeline.map((item, idx) => (
+              <div key={idx} className="relative flex flex-col gap-1">
+                <div className="absolute w-1.5 h-1.5 rounded-full bg-[var(--text)] -left-[27px] lg:-left-[35px] top-[0.4em] opacity-30"></div>
+                <div className="text-[11px] font-mono text-[var(--text-muted)] uppercase tracking-widest">{item.year}</div>
+                <div className="text-xl text-[var(--text)]">{item.role}</div>
+                <div className="text-sm text-[var(--text-muted)]">{item.company}</div>
+              </div>
             ))}
           </div>
         </div>
-
-        {/* RIGHT: STATS & CARDS */}
-        <div className="lg:w-2/5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 w-full">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.2 }}
-              whileHover={{ scale: 1.05 }}
-              className="bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl flex items-center gap-6 backdrop-blur-sm group"
-            >
-              <div className={`text-4xl ${stat.color} bg-slate-900/50 p-4 rounded-xl group-hover:scale-110 transition-transform`}>
-                {stat.icon}
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white">{stat.value}</div>
-                <div className="text-sm text-gray-400 uppercase tracking-widest">{stat.label}</div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
       </div>
-    </motion.section>
+    </section>
   );
 }

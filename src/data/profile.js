@@ -13,10 +13,54 @@ export const profileData = {
       "My primary expertise lies in Python, and I have extensive experience building scalable systems using Node.js, PHP, and modern database solutions like MySQL and MongoDB.",
       "Beyond coding, I enjoy exploring system architecture and security. I am currently honing my skills through challenging personal projects and participating in initiatives like the ABC Challenge 2026 to push my technical boundaries."
     ],
-    stats: [
-      { label: "Semester", value: "6th" },
-      { label: "Projects", value: "10+" },
-      { label: "Focus", value: "Backend & Security" }
+    // TODO: Add past work experience or internships below. 
+    // NEVER render this TODO in the UI.
+    timeline: [
+      {
+        year: "2026",
+        role: "Participant",
+        company: "ABC Challenge 2026"
+      },
+      {
+        year: "2021 — Present",
+        role: "Informatics Student",
+        company: "Universitas Malikussaleh (6th semester)"
+      }
+    ],
+    capabilities: [
+      {
+        id: "01",
+        title: "Encryption",
+        description: "Files the server itself cannot read.",
+        projects: [
+          "Secure REST API with End-to-End Encryption",
+          "Image Steganography for Secure Message Embedding"
+        ]
+      },
+      {
+        id: "02",
+        title: "Access control",
+        description: "Who can do what, and who approved it.",
+        projects: [
+          "Multimedia Lab Inventory Management"
+        ]
+      },
+      {
+        id: "03",
+        title: "Accountability",
+        description: "A record of what happened.",
+        projects: [
+          "Multimedia Lab Inventory Management"
+        ]
+      },
+      {
+        id: "04",
+        title: "Delivery",
+        description: "Packaged so it runs anywhere.",
+        projects: [
+          "ProStream: Meme & Video Rescuer"
+        ]
+      }
     ]
   },
   email: "mohdhaykhal67@gmail.com",

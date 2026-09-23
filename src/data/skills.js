@@ -3,28 +3,35 @@ import { SiNextdotjs, SiTailwindcss, SiMysql, SiPhp, SiExpress, SiMongodb } from
 
 export const skillCategories = [
   {
-    title: "Backend Development",
+    title: "Backend",
     skills: [
-      { name: "Python", icon: <FaPython className="text-yellow-400" />, level: "Advanced" },
-      { name: "Node.js", icon: <FaNodeJs className="text-green-500" />, level: "Intermediate" },
-      { name: "PHP", icon: <SiPhp className="text-indigo-400" />, level: "Intermediate" },
-      { name: "Express", icon: <SiExpress className="text-gray-300" />, level: "Intermediate" },
+      { name: "Python" },
+      { name: "Node.js" },
+      { name: "Express" },
+      { name: "PHP" }
     ],
   },
   {
-    title: "Frontend & Design",
+    title: "Frontend",
     skills: [
-      { name: "Next.js", icon: <SiNextdotjs className="text-white" />, level: "Intermediate" },
-      { name: "Tailwind CSS", icon: <SiTailwindcss className="text-cyan-400" />, level: "Advanced" },
-      { name: "React", icon: <SiNextdotjs className="text-blue-400" />, level: "Intermediate" },
+      { name: "Next.js" },
+      { name: "React" },
+      { name: "Tailwind CSS" }
     ],
   },
   {
-    title: "Databases & Tools",
+    title: "Data",
     skills: [
-      { name: "MySQL", icon: <SiMysql className="text-blue-500" />, level: "Advanced" },
-      { name: "MongoDB", icon: <SiMongodb className="text-green-500" />, level: "Intermediate" },
-      { name: "GitHub", icon: <FaGithub className="text-white" />, level: "Advanced" },
+      { name: "MySQL" },
+      { name: "MongoDB" },
+      { name: "GridFS" }
+    ],
+  },
+  {
+    title: "Tools",
+    skills: [
+      { name: "Git/GitHub" },
+      { name: "Docker" }
     ],
   },
 ];
