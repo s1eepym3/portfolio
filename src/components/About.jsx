@@ -1,14 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FaGraduationCap, FaCode, FaAward } from "react-icons/fa";
+import { profileData } from "../data/profile";
 
 export default function About() {
-  const stats = [
-    { label: "Semester", value: "6th", icon: <FaGraduationCap />, color: "text-blue-400" },
-    { label: "Projects", value: "10+", icon: <FaCode />, color: "text-cyan-400" },
-    { label: "Interests", value: "Backend", icon: <FaAward />, color: "text-purple-400" },
-  ];
+  const stats = profileData.about.stats;
 
   return (
     <motion.section
@@ -36,15 +32,9 @@ export default function About() {
           </motion.div>
 
           <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
-            <p>
-              I am a 6th-semester Informatics student at <span className="text-white font-semibold">Malikussaleh University</span> with a strong interest in software engineering and web development.
-            </p>
-            <p>
-              My primary expertise lies in <span className="text-yellow-400 font-mono">Python</span>, and I have extensive experience building scalable systems using <span className="text-white font-semibold">Node.js</span>, <span className="text-white font-semibold">PHP</span>, and modern database solutions like <span className="text-blue-400">MySQL</span> and <span className="text-green-400">MongoDB</span>.
-            </p>
-            <p>
-              Beyond coding, I enjoy exploring system architecture and security. I am currently honing my skills through challenging personal projects and participating in initiatives like the <span className="text-cyan-400 font-bold italic">ABC Challenge 2026</span> to push my technical boundaries.
-            </p>
+            {profileData.about.paragraphs.map((paragraph, idx) => (
+              <p key={idx} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
+            ))}
           </div>
         </div>
 

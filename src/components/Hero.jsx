@@ -2,6 +2,7 @@
 
 import { TypeAnimation } from "react-type-animation";
 import Image from "next/image";
+import { profileData } from "../data/profile";
 
 export default function Hero() {
   return (
@@ -10,14 +11,14 @@ export default function Hero() {
       {/* TEXT */}
       <div>
         <h1 className="text-4xl md:text-5xl font-bold mb-6">
-          Hi, I'm <span className="text-sky-400">Mohammad Haykhal</span>
+          Hi, I'm <span className="text-sky-400">{profileData.name}</span>
         </h1>
 
         <TypeAnimation
           sequence={[
-            "Web Developer",
+            profileData.titles[0],
             2000,
-            "Software Developer",
+            profileData.titles[1],
             2000,
           ]}
           wrapper="h2"
@@ -27,7 +28,7 @@ export default function Hero() {
         />
 
         <p className="max-w-xl text-gray-400 mb-8">
-          I build things for the web and explore security in modern systems.
+          {profileData.description}
         </p>
 
         <div className="flex gap-4">
