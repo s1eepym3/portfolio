@@ -1,39 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FaEnvelope, FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { FaEnvelope } from "react-icons/fa";
+import { profileData } from "../data/profile";
 
 export default function Contact() {
-  const contactLinks = [
-    {
-      name: "Email",
-      value: "mohdhaykhal67@gmail.com",
-      href: "mailto:mohdhaykhal67@gmail.com",
-      icon: <FaEnvelope />,
-      color: "hover:text-red-400"
-    },
-    {
-      name: "GitHub",
-      value: "github.com/s1eepym3",
-      href: "https://github.com/s1eepym3",
-      icon: <FaGithub />,
-      color: "hover:text-gray-400"
-    },
-    {
-      name: "WhatsApp",
-      value: "+62 831-9702-7655",
-      href: "https://wa.me/6283197027655",
-      icon: <FaWhatsapp />,
-      color: "hover:text-green-400"
-    },
-    {
-      name: "LinkedIn",
-      value: "Mohammad Haykhal",
-      href: "https://www.linkedin.com/in/mohammad-haykhal-a40aaa405",
-      icon: <FaLinkedin />,
-      color: "hover:text-blue-400"
-    },
-  ];
+  const contactLinks = profileData.contact.links;
 
   return (
     <section id="contact" className="px-6 md:px-20 py-24 bg-slate-950">
@@ -48,7 +20,7 @@ export default function Contact() {
             Get In <span className="text-cyan-400">Touch</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            I'm currently looking for new opportunities and collaborations. Whether you have a question or just want to say hi, I'll try my best to get back to you!
+            {profileData.contact.description}
           </p>
         </motion.div>
 
@@ -87,7 +59,7 @@ export default function Contact() {
           className="mt-20 text-center"
         >
           <a
-            href="mailto:mohdhaykhal67@gmail.com"
+            href={`mailto:${profileData.contact.email}`}
             className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all hover:scale-105"
           >
             <FaEnvelope /> Say Hello
