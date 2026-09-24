@@ -11,15 +11,43 @@ import SectionLabel from "./ui/SectionLabel";
 export default function Projects() {
   const shouldReduceMotion = useReducedMotion();
   const scrollerRef = useRef(null);
+  const labelRef = useRef(null);
+  const [containerOffset, setContainerOffset] = useState(24);
+  const [trailingSpace, setTrailingSpace] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Compute slide closest to center of the scroller
+  // Measure label left offset and compute trailing space needed for the last slide to snap to start
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (labelRef.current && scrollerRef.current) {
+        const rect = labelRef.current.getBoundingClientRect();
+        const offset = Math.round(rect.left);
+        setContainerOffset(offset);
+
+        // Get rendered slide width
+        const firstSlide = scrollerRef.current.querySelector("[data-slide-index='0']");
+        const slideWidth = firstSlide ? firstSlide.getBoundingClientRect().width : 720;
+        const scrollerWidth = scrollerRef.current.clientWidth;
+
+        // Trailing space needed so the last slide's left edge can align with containerOffset
+        // scrollerWidth - slideWidth - containerOffset
+        const extra = Math.max(0, Math.round(scrollerWidth - slideWidth - offset));
+        setTrailingSpace(extra);
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
+
+  // Compute slide closest to the left snapped edge of the scroller
   const updateActiveSlide = useCallback(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
     const scrollerRect = scroller.getBoundingClientRect();
-    const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
+    const snapTarget = scrollerRect.left + containerOffset;
     const slides = scroller.querySelectorAll("[data-slide-index]");
 
     let closestIdx = 0;
@@ -28,8 +56,7 @@ export default function Projects() {
     slides.forEach((slide) => {
       const idx = Number(slide.getAttribute("data-slide-index"));
       const rect = slide.getBoundingClientRect();
-      const slideCenter = rect.left + rect.width / 2;
-      const distance = Math.abs(scrollerCenter - slideCenter);
+      const distance = Math.abs(rect.left - snapTarget);
 
       if (distance < minDistance) {
         minDistance = distance;
@@ -39,7 +66,7 @@ export default function Projects() {
 
     // Only update state when active index actually changes
     setActiveIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
-  }, []);
+  }, [containerOffset]);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -71,15 +98,11 @@ export default function Projects() {
     const targetSlide = scroller.querySelector(`[data-slide-index="${index}"]`);
     if (!targetSlide) return;
 
-    const scrollerRect = scroller.getBoundingClientRect();
-    const slideRect = targetSlide.getBoundingClientRect();
-    const targetScrollLeft =
-      scroller.scrollLeft +
-      (slideRect.left - scrollerRect.left) -
-      (scrollerRect.width / 2 - slideRect.width / 2);
+    // Target slide left edge aligns with containerOffset
+    const targetScrollLeft = targetSlide.offsetLeft - containerOffset;
 
     scroller.scrollTo({
-      left: targetScrollLeft,
+      left: Math.round(targetScrollLeft),
       behavior: shouldReduceMotion ? "auto" : "smooth",
     });
   };
@@ -105,8 +128,10 @@ export default function Projects() {
       style={{ minHeight: "auto" }}
     >
       {/* HEADER: LABEL & CONTROLS */}
-      <div className="px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto w-full flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
-        <div>
+      <div
+        className="px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto w-full flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 lg:mb-8"
+      >
+        <div ref={labelRef}>
           <SectionLabel number="03" label="SELECTED WORKS" />
         </div>
 
@@ -157,10 +182,12 @@ export default function Projects() {
         onKeyDown={handleKeyDown}
         tabIndex={0}
         aria-label="Selected works gallery scroller"
-        className="w-full flex gap-6 md:gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth px-6 md:px-12 lg:px-24 py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="w-full flex gap-6 md:gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth py-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         style={{
-          scrollPaddingLeft: "1.5rem",
-          scrollPaddingRight: "1.5rem",
+          paddingLeft: `${containerOffset}px`,
+          paddingRight: `${Math.max(containerOffset, 24)}px`,
+          scrollPaddingLeft: `${containerOffset}px`,
+          scrollPaddingInlineStart: `${containerOffset}px`,
         }}
       >
         {projects.map((project, index) => {
@@ -170,35 +197,23 @@ export default function Projects() {
             <div
               key={project.slug}
               data-slide-index={index}
-              className={`relative shrink-0 snap-center w-[84vw] md:w-[min(80vw,640px)] select-none ${
-                shouldReduceMotion
-                  ? isActive
-                    ? "opacity-100"
-                    : "opacity-55"
-                  : `transition-[transform,opacity] duration-400 ease-out ${
-                      isActive
-                        ? "opacity-100 scale-100"
-                        : "opacity-55 scale-[0.96] hover:opacity-100 hover:scale-100 focus-within:opacity-100 focus-within:scale-100"
-                    }`
-              }`}
+              className="relative shrink-0 snap-start w-[84vw] md:w-[min(80vw,720px)] select-none"
             >
               {/* SOFT WARM RADIAL GLOW FOR ACTIVE SLIDE (NO LARGE BLUR FILTER) */}
               <div
                 aria-hidden="true"
-                className={`absolute -inset-4 rounded-2xl pointer-events-none ${
+                className={`absolute -inset-3 sm:-inset-4 rounded-2xl pointer-events-none ${
                   shouldReduceMotion
                     ? isActive
                       ? "opacity-100"
                       : "opacity-0"
-                    : `transition-opacity duration-500 ease-out ${
-                        isActive
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-60 group-focus-within:opacity-60"
+                    : `transition-opacity duration-400 ease-out ${
+                        isActive ? "opacity-100" : "opacity-0"
                       }`
                 }`}
                 style={{
                   background:
-                    "radial-gradient(ellipse at center, rgba(200, 169, 110, 0.18) 0%, rgba(200, 169, 110, 0.05) 50%, transparent 75%)",
+                    "radial-gradient(ellipse at center, rgba(200, 169, 110, 0.16) 0%, rgba(200, 169, 110, 0.04) 50%, transparent 75%)",
                 }}
               />
 
@@ -207,44 +222,50 @@ export default function Projects() {
                 href={`/projects/${project.slug}`}
                 className="group relative block focus-visible:outline-none"
               >
-                {/* 16:10 FRAMED SCREENSHOT */}
+                {/* GALLERY MAT: 12-16px padding in var(--bg-elevated), hairline border, small radius */}
+                {/* Inactive: image area at ~0.75 opacity; Active: full opacity + gold border + glow */}
                 <div
-                  className={`relative aspect-[16/10] w-full rounded-md border overflow-hidden ${
-                    shouldReduceMotion
-                      ? isActive
-                        ? "border-[var(--accent)]"
-                        : "border-[var(--line)]"
-                      : `transition-colors duration-300 ${
-                          isActive
-                            ? "border-[var(--accent)]"
-                            : "border-[var(--line)] group-hover:border-[var(--accent)] group-focus-visible:border-[var(--accent)]"
-                        }`
+                  className={`relative p-3 sm:p-4 rounded-md bg-[var(--bg-elevated)] border transition-all duration-300 ${
+                    isActive
+                      ? "border-[var(--accent)] opacity-100"
+                      : "border-[var(--line)] opacity-75 group-hover:opacity-100 group-focus-visible:opacity-100 group-hover:border-[var(--accent)] group-focus-visible:border-[var(--accent)]"
                   }`}
                 >
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    priority={index === 0}
-                    className="object-cover object-top"
-                    sizes="(max-width: 768px) 84vw, 640px"
-                  />
+                  {/* 16:10 FRAMED SCREENSHOT */}
+                  <div className="relative aspect-[16/10] w-full rounded-sm overflow-hidden bg-black/30">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      priority={index === 0}
+                      className="object-cover object-top"
+                      sizes="(max-width: 768px) 84vw, 720px"
+                    />
+                    {/* SUBTLE DARK OVERLAY ON ACTIVE SLIDE (DOES NOT STACK WITH INACTIVE OPACITY) */}
+                    {/* Screenshot is cleanly displayed with no dark overlay */}
+                  </div>
                 </div>
 
-                {/* METADATA & TITLE BELOW IMAGE */}
-                <div className="mt-3 flex flex-col gap-1 px-0.5">
+                {/* METADATA & TITLE BELOW IMAGE: ~0.9 opacity when inactive, 1.0 when active */}
+                <div
+                  className={`mt-4 flex flex-col gap-1 px-0.5 transition-opacity duration-300 ${
+                    isActive
+                      ? "opacity-100"
+                      : "opacity-90 group-hover:opacity-100 group-focus-visible:opacity-100"
+                  }`}
+                >
                   {/* NUMBER & STACK */}
                   <div className="flex items-center justify-between gap-4 font-mono text-xs">
-                    <span className="text-[var(--accent)] font-medium">
+                    <span className="text-[var(--accent)] font-medium shrink-0">
                       {project.number}
                     </span>
-                    <div className="flex flex-wrap gap-x-2 text-[var(--text-muted)] text-[11px] truncate">
+                    <div className="text-[var(--text-muted)] text-[11px] truncate text-right min-w-0">
                       {project.stack.join(" · ")}
                     </div>
                   </div>
 
                   {/* TITLE IN INSTRUMENT SERIF WEIGHT 400 (NEVER FONT-BOLD) */}
-                  <h3 className="font-serif font-normal text-[clamp(1.5rem,2.2vw,2.25rem)] leading-tight text-[var(--text)] group-hover:text-[var(--accent)] group-focus-visible:text-[var(--accent)] transition-colors min-h-[2.6rem] flex items-center pb-[0.1em]">
+                  <h3 className="font-serif font-normal text-[clamp(1.5rem,2.2vw,2.25rem)] leading-tight text-[var(--text)] group-hover:text-[var(--accent)] group-focus-visible:text-[var(--accent)] transition-colors min-h-[2.8rem] flex items-center pb-[0.1em]">
                     {project.title}
                   </h3>
 
@@ -265,6 +286,15 @@ export default function Projects() {
             </div>
           );
         })}
+
+        {/* TRAILING SPACER ELEMENT TO ENSURE EVERY SLIDE CAN SNAP TO START */}
+        {trailingSpace > 0 && (
+          <div
+            aria-hidden="true"
+            style={{ width: `${trailingSpace}px` }}
+            className="shrink-0 pointer-events-none select-none"
+          />
+        )}
       </div>
     </section>
   );
