@@ -1,210 +1,271 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useReducedMotion } from "framer-motion";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import projects from "../data/projects";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaGithub, FaExternalLinkAlt, FaTimes } from "react-icons/fa";
+import SectionLabel from "./ui/SectionLabel";
 
 export default function Projects() {
-  const [selectedProject, setSelectedProject] = useState(null);
+  const shouldReduceMotion = useReducedMotion();
+  const scrollerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Compute slide closest to center of the scroller
+  const updateActiveSlide = useCallback(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
+    const slides = scroller.querySelectorAll("[data-slide-index]");
+
+    let closestIdx = 0;
+    let minDistance = Infinity;
+
+    slides.forEach((slide) => {
+      const idx = Number(slide.getAttribute("data-slide-index"));
+      const rect = slide.getBoundingClientRect();
+      const slideCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(scrollerCenter - slideCenter);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIdx = idx;
+      }
+    });
+
+    // Only update state when active index actually changes
+    setActiveIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveSlide();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", updateActiveSlide);
+
+    return () => {
+      scroller.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", updateActiveSlide);
+    };
+  }, [updateActiveSlide]);
+
+  const scrollToSlide = (index) => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const targetSlide = scroller.querySelector(`[data-slide-index="${index}"]`);
+    if (!targetSlide) return;
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    const slideRect = targetSlide.getBoundingClientRect();
+    const targetScrollLeft =
+      scroller.scrollLeft +
+      (slideRect.left - scrollerRect.left) -
+      (scrollerRect.width / 2 - slideRect.width / 2);
+
+    scroller.scrollTo({
+      left: targetScrollLeft,
+      behavior: shouldReduceMotion ? "auto" : "smooth",
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowLeft") {
+      if (activeIndex > 0) {
+        e.preventDefault();
+        scrollToSlide(activeIndex - 1);
+      }
+    } else if (e.key === "ArrowRight") {
+      if (activeIndex < projects.length - 1) {
+        e.preventDefault();
+        scrollToSlide(activeIndex + 1);
+      }
+    }
+  };
 
   return (
-    <section id="projects" className="px-6 md:px-20 py-24 bg-slate-900 relative overflow-hidden">
-      {/* Background Decorative Element */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 blur-[120px] rounded-full -mr-48 -mt-48"></div>
+    <section
+      id="projects"
+      className="py-8 lg:py-10 max-w-full overflow-x-clip relative flex flex-col justify-center"
+      style={{ minHeight: "auto" }}
+    >
+      {/* HEADER: LABEL & CONTROLS */}
+      <div className="px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto w-full flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+        <div>
+          <SectionLabel number="03" label="SELECTED WORKS" />
+        </div>
 
-      <div className="max-w-6xl mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16"
-        >
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Featured <span className="text-cyan-400">Projects</span>
-          </h2>
-          <div className="h-1.5 w-20 bg-cyan-500 rounded-full"></div>
-        </motion.div>
+        {/* CAROUSEL CONTROLS */}
+        <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-auto">
+          {/* PROGRESS INDICATOR */}
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs tracking-widest text-[var(--text-muted)] min-w-[3.5rem]">
+              0{activeIndex + 1} / 0{projects.length}
+            </span>
+            <div className="w-16 sm:w-20 h-[2px] bg-[var(--line)] rounded-full overflow-hidden">
+              <div
+                className={`h-full bg-[var(--accent)] ${
+                  shouldReduceMotion ? "" : "transition-all duration-300 ease-out"
+                }`}
+                style={{
+                  width: `${((activeIndex + 1) / projects.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
 
-        {/* PROJECT GRID */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="group bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all duration-300"
+          {/* PREV / NEXT BUTTONS */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => scrollToSlide(activeIndex - 1)}
+              disabled={activeIndex === 0}
+              aria-label="Previous project"
+              className="w-11 h-11 rounded-full border border-[var(--line)] flex items-center justify-center text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:border-[var(--accent)] focus-visible:outline-none transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
             >
-              {/* IMAGE CONTAINER */}
-              <div className="relative h-64 overflow-hidden">
-                <Image
-                  src={project.cover}
-                  width={600}
-                  height={400}
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"></div>
-                
-                {/* QUICK LINKS ON HOVER */}
-                <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-slate-900/40 backdrop-blur-sm">
-                  <button 
-                    onClick={() => setSelectedProject(project)}
-                    className="bg-white text-slate-900 px-6 py-2.5 rounded-full font-semibold shadow-xl hover:bg-cyan-400 hover:text-white transition"
-                  >
-                    View Details
-                  </button>
-                </div>
-              </div>
-
-              {/* CONTENT */}
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-gray-400 mb-6 line-clamp-2">
-                  {project.description}
-                </p>
-
-                {/* TECH STACK BADGES */}
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {project.tech.map((tech, i) => (
-                    <span 
-                      key={i} 
-                      className="px-3 py-1 text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* BOTTOM LINKS */}
-                <div className="flex items-center gap-6 pt-4 border-t border-slate-700/50">
-                  {project.github && (
-                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition flex items-center gap-2">
-                      <FaGithub size={20}/>
-                      <span className="text-sm">Code</span>
-                    </a>
-                  )}
-                  {project.demo && (
-                    <a href={project.demo} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition flex items-center gap-2">
-                      <FaExternalLinkAlt size={16}/>
-                      <span className="text-sm">Live Demo</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              <FiChevronLeft size={18} />
+            </button>
+            <button
+              onClick={() => scrollToSlide(activeIndex + 1)}
+              disabled={activeIndex === projects.length - 1}
+              aria-label="Next project"
+              className="w-11 h-11 rounded-full border border-[var(--line)] flex items-center justify-center text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:border-[var(--accent)] focus-visible:outline-none transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+            >
+              <FiChevronRight size={18} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* PROJECT MODAL */}
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center z-[100] p-4 md:p-8"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-slate-900 border border-slate-700 rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl shadow-cyan-500/10"
-            >
-              {/* CLOSE BUTTON */}
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-white z-10 bg-slate-800 p-2 rounded-full transition"
-              >
-                <FaTimes size={20}/>
-              </button>
+      {/* GALLERY WALL HORIZONTAL SCROLLER */}
+      <div
+        ref={scrollerRef}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        aria-label="Selected works gallery scroller"
+        className="w-full flex gap-6 md:gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth px-6 md:px-12 lg:px-24 py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        style={{
+          scrollPaddingLeft: "1.5rem",
+          scrollPaddingRight: "1.5rem",
+        }}
+      >
+        {projects.map((project, index) => {
+          const isActive = index === activeIndex;
 
-              <div className="flex flex-col md:flex-row">
-                {/* LEFT: SLIDER */}
-                <div className="md:w-3/5 p-6 md:p-8">
-                  <Swiper
-                    modules={[Navigation, Pagination]}
-                    navigation
-                    pagination={{ clickable: true }}
-                    spaceBetween={20}
-                    slidesPerView={1}
-                    className="rounded-2xl overflow-hidden shadow-2xl"
-                  >
-                    {selectedProject.images.map((img, index) => (
-                      <SwiperSlide key={index}>
-                        <div className="aspect-video relative">
-                          <Image
-                            src={img}
-                            fill
-                            alt="Project screenshot"
-                            className="object-cover"
-                          />
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
+          return (
+            <div
+              key={project.slug}
+              data-slide-index={index}
+              className={`relative shrink-0 snap-center w-[84vw] md:w-[min(80vw,640px)] select-none ${
+                shouldReduceMotion
+                  ? isActive
+                    ? "opacity-100"
+                    : "opacity-55"
+                  : `transition-[transform,opacity] duration-400 ease-out ${
+                      isActive
+                        ? "opacity-100 scale-100"
+                        : "opacity-55 scale-[0.96] hover:opacity-100 hover:scale-100 focus-within:opacity-100 focus-within:scale-100"
+                    }`
+              }`}
+            >
+              {/* SOFT WARM RADIAL GLOW FOR ACTIVE SLIDE (NO LARGE BLUR FILTER) */}
+              <div
+                aria-hidden="true"
+                className={`absolute -inset-4 rounded-2xl pointer-events-none ${
+                  shouldReduceMotion
+                    ? isActive
+                      ? "opacity-100"
+                      : "opacity-0"
+                    : `transition-opacity duration-500 ease-out ${
+                        isActive
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-60 group-focus-within:opacity-60"
+                      }`
+                }`}
+                style={{
+                  background:
+                    "radial-gradient(ellipse at center, rgba(200, 169, 110, 0.18) 0%, rgba(200, 169, 110, 0.05) 50%, transparent 75%)",
+                }}
+              />
+
+              {/* SINGLE LINK TO /projects/[slug] */}
+              <Link
+                href={`/projects/${project.slug}`}
+                className="group relative block focus-visible:outline-none"
+              >
+                {/* 16:10 FRAMED SCREENSHOT */}
+                <div
+                  className={`relative aspect-[16/10] w-full rounded-md border overflow-hidden ${
+                    shouldReduceMotion
+                      ? isActive
+                        ? "border-[var(--accent)]"
+                        : "border-[var(--line)]"
+                      : `transition-colors duration-300 ${
+                          isActive
+                            ? "border-[var(--accent)]"
+                            : "border-[var(--line)] group-hover:border-[var(--accent)] group-focus-visible:border-[var(--accent)]"
+                        }`
+                  }`}
+                >
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    priority={index === 0}
+                    className="object-cover object-top"
+                    sizes="(max-width: 768px) 84vw, 640px"
+                  />
                 </div>
 
-                {/* RIGHT: DETAILS */}
-                <div className="md:w-2/5 p-8 md:pl-0">
-                  <h3 className="text-3xl font-bold text-white mb-4">
-                    {selectedProject.title}
-                  </h3>
-                  
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {selectedProject.tech.map((tech, i) => (
-                      <span key={i} className="px-2 py-1 text-[10px] uppercase tracking-wider font-bold bg-slate-800 text-cyan-400 border border-slate-700 rounded">
-                        {tech}
-                      </span>
-                    ))}
+                {/* METADATA & TITLE BELOW IMAGE */}
+                <div className="mt-3 flex flex-col gap-1 px-0.5">
+                  {/* NUMBER & STACK */}
+                  <div className="flex items-center justify-between gap-4 font-mono text-xs">
+                    <span className="text-[var(--accent)] font-medium">
+                      {project.number}
+                    </span>
+                    <div className="flex flex-wrap gap-x-2 text-[var(--text-muted)] text-[11px] truncate">
+                      {project.stack.join(" · ")}
+                    </div>
                   </div>
 
-                  <p className="text-gray-300 mb-8 leading-relaxed">
-                    {selectedProject.description}
+                  {/* TITLE IN INSTRUMENT SERIF WEIGHT 400 (NEVER FONT-BOLD) */}
+                  <h3 className="font-serif font-normal text-[clamp(1.5rem,2.2vw,2.25rem)] leading-tight text-[var(--text)] group-hover:text-[var(--accent)] group-focus-visible:text-[var(--accent)] transition-colors min-h-[2.6rem] flex items-center pb-[0.1em]">
+                    {project.title}
+                  </h3>
+
+                  {/* FRAMING LINE IN ITALIC GOLD */}
+                  <p className="font-serif italic text-[var(--accent)] text-sm -mt-0.5 pb-[0.1em]">
+                    {project.framing}
                   </p>
 
-                  <div className="space-y-4">
-                    {selectedProject.github && (
-                      <a 
-                        href={selectedProject.github} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-3 w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl transition"
-                      >
-                        <FaGithub size={20}/>
-                        View Source Code
-                      </a>
-                    )}
-                    {selectedProject.demo && (
-                      <a 
-                        href={selectedProject.demo} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-3 w-full bg-cyan-500 hover:bg-cyan-400 text-white py-3 rounded-xl shadow-lg shadow-cyan-500/20 transition"
-                      >
-                        <FaExternalLinkAlt size={16}/>
-                        Live Preview
-                      </a>
-                    )}
+                  {/* VIEW CASE STUDY LINK */}
+                  <div className="mt-0.5 flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--accent)] group-focus-visible:text-[var(--accent)] transition-colors">
+                    <span>View case study</span>
+                    <span className="transition-transform group-hover:translate-x-1 duration-200">
+                      →
+                    </span>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </Link>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }

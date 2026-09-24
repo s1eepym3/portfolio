@@ -1,7 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { profileData } from "../data/profile";
+import projects from "../data/projects";
 import SectionLabel from "./ui/SectionLabel";
+
+// Build a lookup: project title → slug
+const titleToSlug = {};
+projects.forEach((p) => { titleToSlug[p.title] = p.slug; });
 
 export default function Skills() {
   const marqueeItems = [
@@ -26,15 +32,22 @@ export default function Skills() {
               </p>
               
               <div className="mt-auto flex flex-wrap gap-x-4 gap-y-2">
-                {cap.projects.map((proj, i) => (
-                  <a 
-                    key={i} 
-                    href="#projects" 
-                    className="font-mono text-[12px] text-[var(--text-muted)] underline decoration-[var(--line)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)] focus-visible:text-[var(--accent)] focus-visible:decoration-[var(--accent)] transition-colors py-2 -my-2 outline-none"
-                  >
-                    {proj}
-                  </a>
-                ))}
+                {cap.projects.map((proj, i) => {
+                  const slug = titleToSlug[proj];
+                  return slug ? (
+                    <Link 
+                      key={i} 
+                      href={`/projects/${slug}`}
+                      className="font-mono text-[12px] text-[var(--text-muted)] underline decoration-[var(--line)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)] focus-visible:text-[var(--accent)] focus-visible:decoration-[var(--accent)] transition-colors py-2 -my-2 outline-none"
+                    >
+                      {proj}
+                    </Link>
+                  ) : (
+                    <span key={i} className="font-mono text-[12px] text-[var(--text-muted)]">
+                      {proj}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           ))}

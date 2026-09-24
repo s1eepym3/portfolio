@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useLenis } from "lenis/react";
 import ThemeToggle from "./ThemeToggle";
 import { FiMenu, FiX } from "react-icons/fi";
@@ -18,6 +20,8 @@ const StatusPill = () => (
 
 export default function Navbar() {
   const lenis = useLenis();
+  const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -26,6 +30,24 @@ export default function Navbar() {
   const lastScrollY = useRef(0);
   const isScrolledRef = useRef(false);
   const isHiddenRef = useRef(false);
+
+  const isHome = pathname === "/";
+
+  // Handle hash scrolling when arriving from another page
+  useEffect(() => {
+    if (isHome && window.location.hash) {
+      const hash = window.location.hash;
+      // Small delay to let lenis initialize
+      const timer = setTimeout(() => {
+        if (lenis) {
+          lenis.scrollTo(hash, { offset: -80, immediate: false });
+        } else {
+          document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isHome, lenis]);
 
   useEffect(() => {
     let ticking = false;
@@ -70,21 +92,43 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [menuOpen]);
 
-  const handleScroll = (e, id) => {
+  const handleNav = (e, href) => {
     e.preventDefault();
     setMenuOpen(false);
-    if (lenis) {
-      lenis.scrollTo(id, { offset: -80 });
+
+    if (isHome) {
+      // On home page, use lenis smooth scroll
+      const hash = href.replace("/", "");
+      if (lenis) {
+        lenis.scrollTo(hash, { offset: -80 });
+      } else {
+        document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+      }
     } else {
-      document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+      // On other pages, navigate to home with hash
+      router.push(href);
+    }
+  };
+
+  const handleLogo = (e) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    if (isHome) {
+      if (lenis) {
+        lenis.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo({ top: 0 });
+      }
+    } else {
+      router.push("/");
     }
   };
 
   const links = [
-    { label: "Perspective", href: "#about" },
-    { label: "Foundations", href: "#skills" },
-    { label: "Works", href: "#projects" },
-    { label: "Contact", href: "#contact" }
+    { label: "Perspective", href: "/#about" },
+    { label: "Foundations", href: "/#skills" },
+    { label: "Works", href: "/#projects" },
+    { label: "Contact", href: "/#contact" }
   ];
 
   // Mobile menu keeps nav visible
@@ -107,26 +151,26 @@ export default function Navbar() {
       >
         
         {/* LOGO */}
-        <a 
+        <Link 
           id="navbar-logo"
-          href="#" 
-          onClick={(e) => handleScroll(e, "top")} 
-          className="text-xl font-serif font-bold text-[var(--text)]"
+          href="/" 
+          onClick={handleLogo} 
+          className="text-xl font-serif font-normal text-[var(--text)]"
         >
           MH.
-        </a>
+        </Link>
 
         {/* DESKTOP LINKS */}
         <div className="hidden md:flex items-center gap-8">
           {links.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
-              onClick={(e) => handleScroll(e, link.href)}
+              onClick={(e) => handleNav(e, link.href)}
               className="text-sm font-mono uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -156,7 +200,7 @@ export default function Navbar() {
             className="fixed inset-0 z-50 bg-[var(--bg)] flex flex-col p-6"
           >
             <div className="flex items-center justify-between w-full mb-12">
-              <span className="text-xl font-serif font-bold text-[var(--text)]">MH.</span>
+              <span className="text-xl font-serif font-normal text-[var(--text)]">MH.</span>
               <button 
                 className="text-[var(--text)] p-2"
                 onClick={() => setMenuOpen(false)}
@@ -168,17 +212,20 @@ export default function Navbar() {
             
             <div className="flex flex-col gap-8 items-start pl-4">
               {links.map((link, i) => (
-                <motion.a
+                <motion.div
                   key={link.label}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  href={link.href}
-                  onClick={(e) => handleScroll(e, link.href)}
-                  className="text-4xl font-serif text-[var(--text)] hover:text-[var(--accent)] transition-colors"
                 >
-                  {link.label}
-                </motion.a>
+                  <Link
+                    href={link.href}
+                    onClick={(e) => handleNav(e, link.href)}
+                    className="text-4xl font-serif font-normal text-[var(--text)] hover:text-[var(--accent)] transition-colors block pb-[0.1em]"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
               ))}
 
               <motion.div

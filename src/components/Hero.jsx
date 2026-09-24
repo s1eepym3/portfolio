@@ -184,7 +184,7 @@ export default function Hero() {
           {/* CTA BUTTON */}
           <div className="relative z-30 flex items-center">
             <MagneticLink 
-              href="#projects" 
+              href="/#projects" 
               className="group relative px-8 py-4 border border-[var(--line)] rounded-full hover:border-[var(--accent)] transition-colors overflow-hidden"
             >
               <div 

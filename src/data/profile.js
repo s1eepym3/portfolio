@@ -17,12 +17,17 @@ export const profileData = {
     // NEVER render this TODO in the UI.
     timeline: [
       {
-        year: "2026",
+        year: "2025",
         role: "Participant",
         company: "ABC Challenge 2026"
       },
       {
-        year: "2021 — Present",
+        year: "2026",
+        role: "Participant",
+        company: "Gemastik 2026"
+      },
+      {
+        year: "2023 — Present",
         role: "Informatics Student",
         company: "Universitas Malikussaleh (6th semester)"
       }
