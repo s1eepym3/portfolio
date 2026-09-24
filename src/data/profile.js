@@ -89,8 +89,8 @@ export const profileData = {
       },
       {
         name: "WhatsApp",
-        value: "https://wa.me/6283197027655",
-        href: "https://wa.me/6283197027655",
+        value: "https://wa.me/6289601892496",
+        href: "https://wa.me/6289601892496",
         icon: <FaWhatsapp />,
         color: "hover:text-green-400"
       },
@@ -106,7 +106,7 @@ export const profileData = {
   socials: {
     github: "https://github.com/s1eepym3",
     linkedin: "https://www.linkedin.com/in/mohammad-haykhal-a40aaa405",
-    whatsapp: "https://wa.me/6283197027655",
+    whatsapp: "https://wa.me/6289601892496",
     // TODO: Add Twitter/X or other links if needed
   }
 };

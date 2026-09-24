@@ -15,7 +15,7 @@ export default function Skills() {
   ];
 
   return (
-    <section id="skills" className="py-16 lg:py-24 overflow-hidden w-full relative bg-[var(--bg)] flex flex-col justify-center min-h-[min(100vh,800px)]">
+    <section id="skills" className="py-16 lg:py-24 overflow-hidden w-full relative bg-[var(--bg)] flex flex-col justify-center min-h-[min(100vh,800px)] scroll-mt-24">
       <div className="px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto w-full flex-1 flex flex-col justify-center">
         <SectionLabel number="02" label="FOUNDATIONS" />
         

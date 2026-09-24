@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: dark;
   --bg: #0E0D0B;
   --bg-elevated: #161512;
   --text: #EDE8DC;
   --text-muted: #8A8578;
   --accent: #C9A961;
+  --success: var(--accent);
+  --danger: #d15c5c;
   --line: rgba(237,232,220,0.12);
   --nav-h: 80px;
   --x: 50%;
@@ -13,11 +16,14 @@
 }
 
 html.light {
+  color-scheme: light;
   --bg: #F3EFE6;
   --bg-elevated: #EAE5D9;
   --text: #14120F;
   --text-muted: #6B6358;
   --accent: #8C6D2C;
+  --success: var(--accent);
+  --danger: #a63636;
   --line: rgba(20,18,15,0.12);
   --nav-h: 80px;
 }
@@ -28,6 +34,8 @@ html.light {
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
   --color-line: var(--line);
   
   --font-sans: var(--font-geist-sans);
@@ -44,6 +52,23 @@ body {
   color: var(--text);
   font-family: var(--font-geist-sans), sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg) inset;
+  -webkit-text-fill-color: var(--text);
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: var(--accent);
+}
+
+textarea {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
 }
 
 /* Film grain overlay */

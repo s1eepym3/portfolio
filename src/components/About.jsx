@@ -77,7 +77,7 @@ export default function About() {
     <section
       id="about"
       ref={containerRef}
-      className="px-6 md:px-12 lg:px-24 py-32 lg:py-48 max-w-[1400px] mx-auto w-full flex flex-col gap-16 relative"
+      className="px-6 md:px-12 lg:px-24 py-32 lg:py-48 max-w-[1400px] mx-auto w-full flex flex-col gap-16 relative scroll-mt-24"
     >
       <SectionLabel number="01" label="PERSPECTIVE" />
 

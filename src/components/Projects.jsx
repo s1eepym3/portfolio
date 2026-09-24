@@ -124,7 +124,7 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="py-8 lg:py-10 max-w-full overflow-x-clip relative flex flex-col justify-center"
+      className="py-8 lg:py-10 max-w-full overflow-x-clip relative flex flex-col justify-center scroll-mt-24"
       style={{ minHeight: "auto" }}
     >
       {/* HEADER: LABEL & CONTROLS */}
