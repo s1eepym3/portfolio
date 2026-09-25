@@ -25,7 +25,59 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const clickTimesRef = useRef([]);
+
+  useEffect(() => {
+    if (showAdminLogin) {
+      const handleEsc = (e) => {
+        if (e.key === "Escape") {
+          setShowAdminLogin(false);
+          setPassword("");
+          setLoginError("");
+          clickTimesRef.current = [];
+        }
+      };
+      window.addEventListener("keydown", handleEsc);
+      return () => window.removeEventListener("keydown", handleEsc);
+    }
+  }, [showAdminLogin]);
+
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    setLoginError("");
+    
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setLoginError(data.error || "Login failed");
+      } else {
+        setLoginSuccess(true);
+        setTimeout(() => {
+          setShowAdminLogin(false);
+          setLoginSuccess(false);
+          setPassword("");
+        }, 1500);
+      }
+    } catch (err) {
+      setLoginError("An error occurred. Please try again.");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
 
@@ -138,6 +190,19 @@ export default function Navbar() {
   const handleLogo = (e) => {
     e.preventDefault();
     setMenuOpen(false);
+
+    // Hidden admin trigger logic
+    const now = Date.now();
+    let times = clickTimesRef.current;
+    times = times.filter(t => now - t <= 3000);
+    times.push(now);
+    clickTimesRef.current = times;
+
+    if (times.length >= 5) {
+      setShowAdminLogin(true);
+      clickTimesRef.current = [];
+    }
+
     if (isHome) {
       if (lenis) {
         lenis.scrollTo(0, { immediate: true });
@@ -216,6 +281,81 @@ export default function Navbar() {
         </div>
         </nav>
       </header>
+
+      {/* ADMIN LOGIN MODAL */}
+      <AnimatePresence>
+        {showAdminLogin && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowAdminLogin(false);
+                setPassword("");
+                setLoginError("");
+                clickTimesRef.current = [];
+              }
+            }}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[var(--bg-elevated)] border border-[var(--line)] p-8 max-w-sm w-full font-mono relative"
+            >
+              <button 
+                onClick={() => {
+                  setShowAdminLogin(false);
+                  setPassword("");
+                  setLoginError("");
+                  clickTimesRef.current = [];
+                }}
+                className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                aria-label="Close"
+              >
+                <FiX size={20} />
+              </button>
+              
+              <h2 className="text-xl font-serif text-[var(--text)] mb-6">Authorization</h2>
+              
+              {loginSuccess ? (
+                <div className="text-[var(--success)] flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--success)]"></span>
+                  </span>
+                  Session active
+                </div>
+              ) : (
+                <form onSubmit={handleAdminLogin} className="flex flex-col gap-4">
+                  <div>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter passphrase"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] text-[var(--text)] px-4 py-3 focus:outline-none focus:border-[var(--accent)] transition-colors placeholder:text-[var(--text-muted)]"
+                      autoFocus
+                    />
+                  </div>
+                  {loginError && (
+                    <div className="text-red-400 text-sm">{loginError}</div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isLoggingIn || !password}
+                    className="w-full bg-[var(--accent)] text-black px-4 py-3 font-semibold hover:bg-[#b08b3b] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoggingIn ? "Verifying..." : "Access"}
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* MOBILE FULLSCREEN MENU */}
       <AnimatePresence>
