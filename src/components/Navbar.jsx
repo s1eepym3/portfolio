@@ -26,6 +26,31 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const menuRef = useRef(null);
+  const toggleRef = useRef(null);
+
+  useEffect(() => {
+    if (menuOpen) {
+      const handleKeyDown = (e) => {
+        if (e.key === "Escape") {
+          setMenuOpen(false);
+          toggleRef.current?.focus();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      // Wait for animation, then focus first link
+      const timer = setTimeout(() => {
+        if (menuRef.current) {
+          const firstLink = menuRef.current.querySelector('a');
+          if (firstLink) firstLink.focus();
+        }
+      }, 100);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        clearTimeout(timer);
+      };
+    }
+  }, [menuOpen]);
 
   const lastScrollY = useRef(0);
   const isScrolledRef = useRef(false);
@@ -136,7 +161,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav 
+      <header 
         className={`fixed top-0 left-0 w-full z-50 px-6 md:px-12 transition-[background-color,border-color,padding,backdrop-filter] duration-300 ease-out flex items-center justify-between ${
           isScrolled 
             ? "bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--line)] py-4" 
@@ -149,7 +174,7 @@ export default function Navbar() {
           transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
-        
+        <nav className="w-full flex items-center justify-between">
         {/* LOGO */}
         <Link 
           id="navbar-logo"
@@ -181,6 +206,7 @@ export default function Navbar() {
           
           {/* MOBILE MENU TOGGLE */}
           <button 
+            ref={toggleRef}
             className="md:hidden text-[var(--text)] p-2"
             onClick={() => setMenuOpen(true)}
             aria-label="Open Menu"
@@ -188,16 +214,21 @@ export default function Navbar() {
             <FiMenu size={24} />
           </button>
         </div>
-      </nav>
+        </nav>
+      </header>
 
       {/* MOBILE FULLSCREEN MENU */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            ref={menuRef}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 z-50 bg-[var(--bg)] flex flex-col p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation menu"
           >
             <div className="flex items-center justify-between w-full mb-12">
               <span className="text-xl font-serif font-normal text-[var(--text)]">MH.</span>

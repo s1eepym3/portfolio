@@ -4,7 +4,6 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useReducedMotion } from "framer-motion";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import projects from "../data/projects";
 import SectionLabel from "./ui/SectionLabel";
 
@@ -162,7 +161,7 @@ export default function Projects() {
               aria-label="Previous project"
               className="w-11 h-11 rounded-full border border-[var(--line)] flex items-center justify-center text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:border-[var(--accent)] focus-visible:outline-none transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
             >
-              <FiChevronLeft size={18} />
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
             <button
               onClick={() => scrollToSlide(activeIndex + 1)}
@@ -170,7 +169,7 @@ export default function Projects() {
               aria-label="Next project"
               className="w-11 h-11 rounded-full border border-[var(--line)] flex items-center justify-center text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:border-[var(--accent)] focus-visible:outline-none transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
             >
-              <FiChevronRight size={18} />
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
         </div>
@@ -221,6 +220,7 @@ export default function Projects() {
               <Link
                 href={`/projects/${project.slug}`}
                 className="group relative block focus-visible:outline-none"
+                data-cursor="view"
               >
                 {/* GALLERY MAT: 12-16px padding in var(--bg-elevated), hairline border, small radius */}
                 {/* Inactive: image area at ~0.75 opacity; Active: full opacity + gold border + glow */}
