@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  number      Int
+  title       String
+  framing     String
+  summary     String
+  stack       String[]
+  image       String
+  year        String?
+  repoUrl     String?
+  demoUrl     String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  images      ProjectImage[]
+  caseStudy   CaseStudy?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProjectImage {
+  id         String  @id @default(cuid())
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String
+  url        String
+  alt        String
+  sortOrder  Int     @default(0)
+}
+
+model CaseStudy {
+  id        String  @id @default(cuid())
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String  @unique
+  overview  String?
+  problem   String?
+  approach  String?
+  challenge String?
+  result    String?
+}
+
+model TimelineEntry {
+  id          String  @id @default(cuid())
+  year        String
+  role        String
+  company     String
+  description String?
+  order       Int     @default(0)
+}
+
+model Capability {
+  id          String   @id @default(cuid())
+  number      Int
+  name        String
+  framing     String
+  proofSlugs  String[]
+  order       Int      @default(0)
+}
+
+model SiteSetting {
+  key   String @id
+  value String
+}
