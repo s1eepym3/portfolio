@@ -63,14 +63,15 @@ export default function Navbar() {
       const data = await res.json();
       
       if (!res.ok) {
-        setLoginError(data.error || "Login failed");
+        setLoginError(data?.error || "Login failed");
       } else {
         setLoginSuccess(true);
         setTimeout(() => {
           setShowAdminLogin(false);
           setLoginSuccess(false);
           setPassword("");
-        }, 1500);
+          router.push("/admin/timeline");
+        }, 500);
       }
     } catch (err) {
       setLoginError("An error occurred. Please try again.");
@@ -193,7 +194,7 @@ export default function Navbar() {
 
     // Hidden admin trigger logic
     const now = Date.now();
-    let times = clickTimesRef.current;
+    let times = clickTimesRef.current || [];
     times = times.filter(t => now - t <= 3000);
     times.push(now);
     clickTimesRef.current = times;

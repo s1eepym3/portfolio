@@ -1,9 +1,7 @@
 import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
+import PublicChrome from "../components/PublicChrome";
 import Providers from "../components/Providers";
-import LanternOverlay from "../components/LanternOverlay";
-import CustomCursor from "../components/CustomCursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,10 +68,7 @@ export default function RootLayout({ children }) {
       >
         <Providers>
           <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[var(--bg-elevated)] focus:text-[var(--text)] focus:border focus:border-[var(--accent)] font-mono text-sm">Skip to content</a>
-          <CustomCursor />
-          <div className="grain-overlay"></div>
-          <LanternOverlay />
-          <Navbar />
+          <PublicChrome />
           {children}
         </Providers>
       </body>

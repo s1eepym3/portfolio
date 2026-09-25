@@ -66,7 +66,7 @@ function AnimatedWord({ word, progress, index, total }) {
   );
 }
 
-export default function About() {
+export default function About({ timeline }) {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -100,7 +100,7 @@ export default function About() {
         {/* RIGHT: TIMELINE */}
         <div className="lg:w-1/3 flex flex-col w-full">
           <div className="border-l border-[var(--line)] pl-6 lg:pl-8 flex flex-col gap-10">
-            {profileData.about.timeline.map((item, idx) => (
+            {(timeline || profileData.about.timeline).map((item, idx) => (
               <div key={idx} className="relative flex flex-col gap-1">
                 <div className="absolute w-1.5 h-1.5 rounded-full bg-[var(--text)] -left-[27px] lg:-left-[35px] top-[0.4em] opacity-30"></div>
                 <div className="text-[11px] font-mono text-[var(--text-muted)] uppercase tracking-widest">{item.year}</div>

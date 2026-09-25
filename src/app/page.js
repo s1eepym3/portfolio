@@ -4,8 +4,26 @@ import Skills from "../components/Skills";
 import Projects from "../components/Projects";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
+import prisma from "../lib/prisma";
+import { profileData } from "../data/profile";
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  let timeline = [];
+  let capabilities = [];
+  try {
+    timeline = await prisma.timelineEntry.findMany({
+      orderBy: { order: 'asc' }
+    });
+    capabilities = await prisma.capability.findMany({
+      orderBy: { order: 'asc' }
+    });
+  } catch (err) {
+    console.error("Database connection failed for timeline/capabilities fallback to static:", err);
+    timeline = profileData.about.timeline;
+    capabilities = profileData.about.capabilities;
+  }
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -28,9 +46,9 @@ export default function Home() {
 
       <Hero />
 
-      <About />
+      <About timeline={timeline} />
 
-      <Skills />
+      <Skills capabilities={capabilities} />
 
       <Projects />
 

@@ -5,11 +5,15 @@ import { profileData } from "../data/profile";
 import projects from "../data/projects";
 import SectionLabel from "./ui/SectionLabel";
 
-// Build a lookup: project title → slug
+// Build lookups: title → slug AND slug → title
 const titleToSlug = {};
-projects.forEach((p) => { titleToSlug[p.title] = p.slug; });
+const slugToTitle = {};
+projects.forEach((p) => { 
+  titleToSlug[p.title] = p.slug; 
+  slugToTitle[p.slug] = p.title;
+});
 
-export default function Skills() {
+export default function Skills({ capabilities }) {
   const marqueeItems = [
     "BACKEND", "DATABASES", "FRONTEND", "SYSTEMS", "ENCRYPTION", "APIS", "SECURITY"
   ];
@@ -21,30 +25,34 @@ export default function Skills() {
         
         {/* CAPABILITIES 2x2 GRID */}
         <div className="mt-8 lg:mt-12 grid grid-cols-1 md:grid-cols-2 gap-y-0 gap-x-12 lg:gap-x-24">
-          {profileData.about.capabilities.map((cap) => (
+          {(capabilities || profileData.about.capabilities).map((cap) => (
             <div key={cap.id} className="flex flex-col border-t border-[var(--line)] pt-6 pb-8">
-              <div className="font-mono text-xs text-[var(--text-muted)] mb-3">{cap.id}</div>
+              <div className="font-mono text-xs text-[var(--text-muted)] mb-3">
+                {String(cap.number !== undefined ? cap.number : String(cap.id || cap.slug).replace(/\D/g, '')).padStart(2, '0')}
+              </div>
               <h3 className="font-serif text-[clamp(1.75rem,3vw,2.75rem)] leading-tight text-[var(--text)] mb-2 pb-[0.22em] -mb-[0.22em]">
-                {cap.title}
+                {cap.name || cap.title}
               </h3>
               <p className="text-[var(--text-muted)] text-sm md:text-base mt-0 mb-4">
-                {cap.description}
+                {cap.framing || cap.description}
               </p>
               
               <div className="mt-auto flex flex-wrap gap-x-4 gap-y-2">
-                {cap.projects.map((proj, i) => {
-                  const slug = titleToSlug[proj];
+                {(cap.proofSlugs || cap.projects).map((item, i) => {
+                  const isSlug = !!cap.proofSlugs;
+                  const slug = isSlug ? item : titleToSlug[item];
+                  const title = isSlug ? (slugToTitle[item] || item) : item;
                   return slug ? (
                     <Link 
                       key={i} 
                       href={`/projects/${slug}`}
                       className="font-mono text-[12px] text-[var(--text-muted)] underline decoration-[var(--line)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)] focus-visible:text-[var(--accent)] focus-visible:decoration-[var(--accent)] transition-colors py-2 -my-2 outline-none"
                     >
-                      {proj}
+                      {title}
                     </Link>
                   ) : (
                     <span key={i} className="font-mono text-[12px] text-[var(--text-muted)]">
-                      {proj}
+                      {title}
                     </span>
                   );
                 })}

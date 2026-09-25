@@ -37,14 +37,19 @@ model ProjectImage {
 }
 
 model CaseStudy {
-  id        String  @id @default(cuid())
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId String  @unique
-  overview  String?
-  problem   String?
-  approach  String?
-  challenge String?
-  result    String?
+  id             String  @id @default(cuid())
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      String  @unique
+  overview       String?
+  problem        String?
+  approach       String?
+  challenge      String?
+  result         String?
+  draftOverview  String?
+  draftProblem   String?
+  draftApproach  String?
+  draftChallenge String?
+  draftResult    String?
 }
 
 model TimelineEntry {
