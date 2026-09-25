@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import projects from "../../../data/projects";
+import Lightbox from "../../../components/Lightbox";
 
 export async function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
@@ -104,6 +105,9 @@ export default async function CaseStudyPage({ params }) {
         {/* TODO: Add interactive steganography demo component here.
             When ready, render an interactive embed that lets visitors
             encode/decode a message in an image. For now, nothing is rendered. */}
+
+        {/* GALLERY */}
+        <Lightbox gallery={project.gallery} />
 
         {/* LINKS */}
         <div className="mt-20 lg:mt-24 pt-8 border-t border-[var(--line)] flex flex-wrap gap-6">

@@ -7,7 +7,9 @@ const projects = [
     summary: "Secure backend API for encrypted file storage using MongoDB GridFS with end-to-end encryption.",
     stack: ["Node.js", "Express", "MongoDB", "GridFS"],
     // TODO: Add year when available
-    image: "/projects/secureapi/dashboardgridfs.png",
+    image: "/projects/secureapi/logingridfs.png",
+    // TODO: fill gallery manually or via future admin panel
+    gallery: [],
     links: {
       repo: "https://github.com/s1eepym3/Implementasi-E2EE-MongoDB",
     },
@@ -30,6 +32,10 @@ const projects = [
     stack: ["Python", "OpenCV", "PIL", "NumPy"],
     // TODO: Add year when available
     image: "/projects/Steganogrphy/overview.png",
+    gallery: [
+      { src: "/projects/Steganogrphy/embed.png", alt: "Image Steganography for Secure Message Embedding screenshot 1" },
+      { src: "/projects/Steganogrphy/extract.png", alt: "Image Steganography for Secure Message Embedding screenshot 2" }
+    ],
     links: {
       repo: "https://github.com/s1eepym3/Project_Steganography",
       demo: "https://project-steganography.vercel.app/",
@@ -52,7 +58,9 @@ const projects = [
     summary: "A professional inventory system designed to track and manage multimedia laboratory assets. Featuring role-based access control (Admin/Member), automated stock transaction logging, and a secure user approval workflow to ensure accountability and streamlined resource management.",
     stack: ["React", "Node.js", "Express", "MongoDB", "JWT", "Vite"],
     // TODO: Add year when available
-    image: "/projects/inventaris/dashboardadmin.png",
+    image: "/projects/inventaris/login.png",
+    // TODO: fill gallery manually or via future admin panel
+    gallery: [],
     links: {
       repo: "https://github.com/s1eepym3/Sistem-Inventaris-Lab-Multimedia",
     },
@@ -74,7 +82,9 @@ const projects = [
     summary: "A containerized media processing tool built with React and Node.js. The Express backend handles video extraction and conversion, while Docker ensures consistent deployment across any environment.",
     stack: ["React", "Node.js", "Docker", "Express", "Tailwind"],
     // TODO: Add year when available
-    image: "/projects/converter/dashboard2.png",
+    image: "/projects/converter/dashboard.png",
+    // TODO: fill gallery manually or via future admin panel
+    gallery: [],
     links: {
       repo: "https://github.com/s1eepym3/YT_TT_Converter",
     },
