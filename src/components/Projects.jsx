@@ -4,10 +4,17 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useReducedMotion } from "framer-motion";
-import projects from "../data/projects";
+import staticProjects from "../data/projects";
 import SectionLabel from "./ui/SectionLabel";
 
-export default function Projects() {
+// Format project number: DB gives integer (1), static gives string ("01")
+const formatNumber = (n) => {
+  if (typeof n === 'number') return String(n).padStart(2, '0');
+  return n; // already "01" etc. from static data
+};
+
+export default function Projects({ projects: projectsProp }) {
+  const projects = (projectsProp && projectsProp.length > 0) ? projectsProp : staticProjects;
   const shouldReduceMotion = useReducedMotion();
   const scrollerRef = useRef(null);
   const labelRef = useRef(null);
@@ -257,7 +264,7 @@ export default function Projects() {
                   {/* NUMBER & STACK */}
                   <div className="flex items-center justify-between gap-4 font-mono text-xs">
                     <span className="text-[var(--accent)] font-medium shrink-0">
-                      {project.number}
+                      {formatNumber(project.number)}
                     </span>
                     <div className="text-[var(--text-muted)] text-[11px] truncate text-right min-w-0">
                       {project.stack.join(" · ")}

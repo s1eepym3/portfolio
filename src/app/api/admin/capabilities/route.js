@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { checkAdminSession } from '@/lib/adminAuth';
 import prisma from '@/lib/prisma';
 
@@ -46,6 +47,9 @@ export async function POST(request) {
         order: Number(order) 
       }
     });
+    
+    revalidatePath('/');
+    
     return NextResponse.json(entry);
   } catch (error) {
     console.error(error);

@@ -3,15 +3,39 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import projects from "../../../data/projects";
 import Lightbox from "../../../components/Lightbox";
+import prisma from "../../../lib/prisma";
+
+export const revalidate = 60;
 
 export async function generateStaticParams() {
+  try {
+    const dbProjects = await prisma.project.findMany({
+      where: { published: true },
+      select: { slug: true }
+    });
+    if (dbProjects && dbProjects.length > 0) {
+      return dbProjects.map((p) => ({ slug: p.slug }));
+    }
+  } catch (err) {
+    console.error("Failed to fetch static params from DB:", err);
+  }
   return projects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  let project = null;
+  try {
+    project = await prisma.project.findUnique({
+      where: { slug, published: true }
+    });
+  } catch (err) {}
+  
+  if (!project) {
+    project = projects.find((p) => p.slug === slug);
+  }
   if (!project) return {};
+  
   return {
     title: `${project.title} — Mohammad Haykhal`,
     description: project.summary,
@@ -20,20 +44,67 @@ export async function generateMetadata({ params }) {
 
 export default async function CaseStudyPage({ params }) {
   const { slug } = await params;
-  const projectIndex = projects.findIndex((p) => p.slug === slug);
-  if (projectIndex === -1) notFound();
+  
+  let project = null;
+  let nextProject = null;
 
-  const project = projects[projectIndex];
-  const nextProject = projects[(projectIndex + 1) % projects.length];
-  const cs = project.caseStudy || {};
+  try {
+    const dbProjects = await prisma.project.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+      include: {
+        caseStudy: true,
+        images: {
+          orderBy: { sortOrder: 'asc' }
+        }
+      }
+    });
+
+    if (dbProjects && dbProjects.length > 0) {
+      const projectIndex = dbProjects.findIndex((p) => p.slug === slug);
+      if (projectIndex !== -1) {
+        project = dbProjects[projectIndex];
+        nextProject = dbProjects[(projectIndex + 1) % dbProjects.length];
+      }
+    }
+  } catch (err) {
+    console.error("Database connection failed, falling back to static data for CaseStudyPage:", err);
+  }
+
+  // Fallback to static data if DB query failed or project not found in DB
+  if (!project) {
+    const projectIndex = projects.findIndex((p) => p.slug === slug);
+    if (projectIndex === -1) notFound();
+    project = projects[projectIndex];
+    nextProject = projects[(projectIndex + 1) % projects.length];
+  }
+
+  // Handle number formatting (DB int vs static string)
+  const formattedNumber = typeof project.number === 'number' ? String(project.number).padStart(2, '0') : project.number;
+
+  // STRICT SAFE DESTRUCTURING: NEVER spread the raw caseStudy object.
+  // Explicitly pull ONLY the 5 safe fields so draft fields are completely omitted from the render path.
+  const { overview, problem, approach, challenge, result } = project.caseStudy || {};
 
   const sections = [
-    { label: "OVERVIEW", content: cs.overview },
-    { label: "PROBLEM", content: cs.problem },
-    { label: "APPROACH", content: cs.approach },
-    { label: "CHALLENGE", content: cs.challenge },
-    { label: "RESULT", content: cs.result },
+    { label: "OVERVIEW", content: overview },
+    { label: "PROBLEM", content: problem },
+    { label: "APPROACH", content: approach },
+    { label: "CHALLENGE", content: challenge },
+    { label: "RESULT", content: result },
   ];
+
+  // Map gallery images
+  let gallery = [];
+  if (project.images && Array.isArray(project.images)) {
+    gallery = project.images.map(img => ({ src: img.url, alt: img.alt }));
+  } else if (project.gallery && Array.isArray(project.gallery)) {
+    gallery = project.gallery;
+  }
+
+  // Map links
+  const repoLink = project.repoUrl || (project.links && project.links.repo);
+  const demoLink = project.demoUrl || (project.links && project.links.demo);
 
   return (
     <main className="bg-[var(--bg)] text-[var(--text)] min-h-screen pt-[calc(var(--nav-h)+2rem)]">
@@ -49,7 +120,7 @@ export default async function CaseStudyPage({ params }) {
         {/* HEADER */}
         <div className="mb-12">
           <div className="font-mono text-xs text-[var(--text-muted)] uppercase tracking-widest mb-4">
-            PROJECT {project.number}
+            PROJECT {formattedNumber}
           </div>
           <h1 className="font-serif text-[clamp(2.5rem,6vw,5rem)] leading-[1.05] tracking-[-0.02em] text-[var(--text)] pb-[0.22em] -mb-[0.22em]">
             {project.title}
@@ -107,13 +178,13 @@ export default async function CaseStudyPage({ params }) {
             encode/decode a message in an image. For now, nothing is rendered. */}
 
         {/* GALLERY */}
-        <Lightbox gallery={project.gallery} />
+        <Lightbox gallery={gallery} />
 
         {/* LINKS */}
         <div className="mt-20 lg:mt-24 pt-8 border-t border-[var(--line)] flex flex-wrap gap-6">
-          {project.links.repo && (
+          {repoLink && (
             <a
-              href={project.links.repo}
+              href={repoLink}
               target="_blank"
               rel="noopener noreferrer"
               className="font-mono text-sm uppercase tracking-widest text-[var(--text)] hover:text-[var(--accent)] underline decoration-[var(--line)] underline-offset-4 hover:decoration-[var(--accent)] transition-colors"
@@ -121,9 +192,9 @@ export default async function CaseStudyPage({ params }) {
               Code →
             </a>
           )}
-          {project.links.demo && (
+          {demoLink && (
             <a
-              href={project.links.demo}
+              href={demoLink}
               target="_blank"
               rel="noopener noreferrer"
               className="font-mono text-sm uppercase tracking-widest text-[var(--text)] hover:text-[var(--accent)] underline decoration-[var(--line)] underline-offset-4 hover:decoration-[var(--accent)] transition-colors"

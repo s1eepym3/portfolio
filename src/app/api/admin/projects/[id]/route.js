@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { checkAdminSession } from '@/lib/adminAuth';
 import prisma from '@/lib/prisma';
 
@@ -89,6 +90,12 @@ export async function PUT(request, { params }) {
       }
     });
 
+    revalidatePath('/');
+    revalidatePath(`/projects/${project.slug}`);
+    if (existingProject.slug !== project.slug) {
+      revalidatePath(`/projects/${existingProject.slug}`);
+    }
+
     return NextResponse.json(project);
   } catch (error) {
     console.error(error);
@@ -110,7 +117,11 @@ export async function DELETE(request, { params }) {
 
   const { id } = await params;
   try {
-    await prisma.project.delete({ where: { id } });
+    const deletedProject = await prisma.project.delete({ where: { id } });
+    
+    revalidatePath('/');
+    revalidatePath(`/projects/${deletedProject.slug}`);
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);

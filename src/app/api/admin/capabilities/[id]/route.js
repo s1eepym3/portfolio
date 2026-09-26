@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { checkAdminSession } from '@/lib/adminAuth';
 import prisma from '@/lib/prisma';
 
@@ -33,6 +34,9 @@ export async function PUT(request, { params }) {
         order: Number(order) 
       }
     });
+    
+    revalidatePath('/');
+    
     return NextResponse.json(entry);
   } catch (error) {
     console.error(error);
@@ -47,6 +51,9 @@ export async function DELETE(request, { params }) {
   const { id } = await params;
   try {
     await prisma.capability.delete({ where: { id } });
+    
+    revalidatePath('/');
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);

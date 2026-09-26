@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { checkAdminSession } from '@/lib/adminAuth';
 import prisma from '@/lib/prisma';
 
@@ -81,6 +82,9 @@ export async function POST(request) {
         caseStudy: true
       }
     });
+
+    revalidatePath('/');
+    revalidatePath(`/projects/${project.slug}`);
 
     return NextResponse.json(project);
   } catch (error) {

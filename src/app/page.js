@@ -6,12 +6,14 @@ import Contact from "../components/Contact";
 import Footer from "../components/Footer";
 import prisma from "../lib/prisma";
 import { profileData } from "../data/profile";
+import staticProjects from "../data/projects";
 
 export const revalidate = 60;
 
 export default async function Home() {
   let timeline = [];
   let capabilities = [];
+  let projects = [];
   try {
     timeline = await prisma.timelineEntry.findMany({
       orderBy: { order: 'asc' }
@@ -19,11 +21,32 @@ export default async function Home() {
     capabilities = await prisma.capability.findMany({
       orderBy: { order: 'asc' }
     });
+    projects = await prisma.project.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+      select: {
+        slug: true,
+        number: true,
+        title: true,
+        framing: true,
+        summary: true,
+        stack: true,
+        image: true,
+        year: true,
+      }
+    });
   } catch (err) {
-    console.error("Database connection failed for timeline/capabilities fallback to static:", err);
+    console.error("Database connection failed, falling back to static data:", err);
     timeline = profileData.about.timeline;
     capabilities = profileData.about.capabilities;
+    projects = staticProjects;
   }
+
+  // If DB returned empty projects (no rows yet), fall back to static
+  if (!projects || projects.length === 0) {
+    projects = staticProjects;
+  }
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -50,7 +73,7 @@ export default async function Home() {
 
       <Skills capabilities={capabilities} />
 
-      <Projects />
+      <Projects projects={projects} />
 
       <Contact />
 
